@@ -1,0 +1,30 @@
+body{
+    background-color: #121212;
+}
+.logo{
+    border-radius: 100%;
+    width: 28%;
+    margin-top: 2rem;
+}
+#homepage h1{
+    color:white;
+}
+.welcome{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Roboto Mono', monospace;
+}
+.a-wrapper a{
+    margin:2rem;
+    color:white;
+    font-size: 1.4rem;
+}
+.a-wrapper a:hover{
+    color:#BB86FC;
+    transition:all 0.5s;
+}
+.a-wrapper{
+    margin-top: 2.3rem;
+}
