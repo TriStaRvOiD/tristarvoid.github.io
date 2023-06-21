@@ -11,6 +11,7 @@ This application's code is available under a GPL v3 license. This excludes the i
 ## Attribution
 
 - This website uses icons from https://fontawesome.com
+- This application uses the "Josefin Sans" font family from https://fonts.google.com
 - The GitHub logo used on this website is the property of GitHub Inc.
 - The Reddit logo used on this website is the property of Reddit Inc.
 - The Twitter logo used on this website is the property of Twitter Inc.
