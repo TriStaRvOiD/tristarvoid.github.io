@@ -6,7 +6,7 @@ My website right now, has barely any lines of code. I'm still in the process of 
 
 ## License
 
-This application's code is available under a GPL v3 license. This excludes the icons, fonts, logos and assets used.
+This website's code is available under a GPL v3 license. This excludes the icons, fonts, logos and assets used.
 
 ## Attribution
 
