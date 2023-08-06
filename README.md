@@ -10,11 +10,10 @@ This website's code is available under a GPL v3 license. This excludes the icons
 
 ## Attribution
 
-- This website uses icons from https://fontawesome.com
 - This website uses the "Josefin Sans" font family from https://fonts.google.com
 - The GitHub logo used on this website is the property of GitHub Inc.
 - The Reddit logo used on this website is the property of Reddit Inc.
-- The Twitter logo used on this website is the property of Twitter Inc.
+- The Mastodon logo used on this website is the property of Mastodon Inc.
 
 The icons used belong to their respective copyright owners.
 
