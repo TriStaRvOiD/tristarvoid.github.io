@@ -92,6 +92,7 @@ html {
 }
 
 .social-row {
+  display: block !important;
   display: flex;
   flex-direction: row;
   justify-content: center;
