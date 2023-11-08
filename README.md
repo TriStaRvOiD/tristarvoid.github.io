@@ -1,6 +1,6 @@
 # tristarvoid.github.io
 
-This is a simple website that shows my most-used social-media profiles.
+This is a simple website that shows some of my social-media profiles.
 
 My website right now, has barely any lines of code. I'm still in the process of learning to develop webpages with HTML and CSS. Some day, I'll get there.
 
