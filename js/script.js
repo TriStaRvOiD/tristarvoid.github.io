@@ -8,10 +8,19 @@
  * You should have received a copy of the GNU General Public License along with the code for tristarvoid.github.io. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let themeToggle = document.querySelector(".theme-toggle");
-let darkMode = document.querySelector(".dark-theme");
+const darkMode = document.querySelector(".dark-theme");
+const container = document.querySelector(".container");
+const imgElement = document.querySelector(".logo");
 
-themeToggle.addEventListener("click", () => {
+document.addEventListener('click', function(event) {
+  if ( event.target.closest(".logo")
+    || event.target.closest("h1") 
+    || event.target.closest("#github-logo") 
+    || event.target.closest("#reddit-logo") 
+    || event.target.closest("#mastodon-logo")
+  ) return
+  
+  container.style.left = event.clientX + 'px';
+  container.style.top = event.clientY + 'px';
   darkMode.classList.toggle("active");
-  themeToggle.classList.toggle("active");
-});
+}, true);
