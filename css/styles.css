@@ -80,6 +80,7 @@ html {
   justify-content: center;
   align-items: center;
   padding-top:20px;
+  user-select: none;
 }
 
 .logo {
