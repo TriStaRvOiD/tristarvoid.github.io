@@ -86,12 +86,14 @@ html {
   border-radius: 100%;
   object-fit: contain;
   max-height: 210px;
+  user-select: none;
 }
 
 #homepage h1 {
   padding-top: 30px;
   color: white;
   mix-blend-mode: difference;
+  user-select: none;
 }
 
 @media screen and (max-width: 600px) {
