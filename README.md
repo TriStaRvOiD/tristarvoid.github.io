@@ -17,6 +17,10 @@ This website's code is available under a GPL v3 license. This excludes the icons
 
 The icons used belong to their respective copyright owners.
 
+## Notice
+
+- The video was created using [Runway AI](https://runwayml.com/)'s Gen-2
+
 ## Credits
 
 - This webste wouldn't have been possible without some much needed help from [Asad Parkar](https://github.com/asadparkar)
