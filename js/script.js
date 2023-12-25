@@ -10,11 +10,11 @@
 
 const darkMode = document.querySelector(".dark-theme");
 const container = document.querySelector(".container");
-const imgElement = document.querySelector(".logo");
+const logoElement = document.querySelector(".logo");
 
-document.addEventListener('click', function(event) {
+document.addEventListener("click", function(event) {
   if ( event.target.closest(".logo")
-    || event.target.closest("h1") 
+    || event.target.closest("h1")
     || event.target.closest("#github-logo") 
     || event.target.closest("#reddit-logo") 
     || event.target.closest("#mastodon-logo")
@@ -24,3 +24,10 @@ document.addEventListener('click', function(event) {
   container.style.top = event.clientY + 'px';
   darkMode.classList.toggle("active");
 }, true);
+
+logoElement.addEventListener("click", function(event) {
+  if (logoElement.paused)
+    logoElement.play();
+  else
+    logoElement.pause();
+});
