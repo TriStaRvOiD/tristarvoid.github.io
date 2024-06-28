@@ -74,11 +74,11 @@ html {
 }
 
 .social-row {
-  display: block !important;
+  display: flex !important;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding-top:20px;
+  padding-top: 20px;
   user-select: none;
 }
 
@@ -93,6 +93,12 @@ html {
   color: white;
   mix-blend-mode: difference;
   user-select: none;
+}
+
+@media screen and (max-width: 768px) {
+  .social-row {
+    flex-wrap: wrap;
+  }
 }
 
 @media screen and (max-width: 600px) {
