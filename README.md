@@ -12,7 +12,7 @@ This website's code is available under a GPL v3 license. This excludes the icons
 
 - This website uses the "Josefin Sans" font family from https://fonts.google.com
 - The GitHub logo used on this website is the property of GitHub Inc.
-- The Reddit logo used on this website is the property of Reddit Inc.
+- The Dev Community logo used on this website is the property of Dev Community Inc.
 - The Mastodon logo used on this website is the property of Mastodon Inc.
 
 The icons used belong to their respective copyright owners.
