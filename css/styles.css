@@ -107,3 +107,20 @@ html {
     height: 250vh;
   }
 }
+
+#github-logo {
+  background-color: white; /* Ensure background color remains white */
+  padding: 1px;
+  border-radius: 50%; /* Ensure circular shape */
+}
+
+#dev-black {
+  background-color: white; /* Ensure background color remains white */
+  padding: 1px;
+}
+
+#mastodon-logo {
+  background-color: white; /* Ensure background color remains white */
+  padding: 0.2px;
+  border-radius: 30%;
+}
