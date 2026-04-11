@@ -1,0 +1,140 @@
+---
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ */
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title="Blog | TriStaRvOiD" description="Writing by TriStaRvOiD">
+  <section class="blog-list">
+    <div class="blog-header animate-entrance">
+      <h1>Blog</h1>
+      <a href="/rss.xml" target="_blank" rel="noopener noreferrer" class="rss-link" aria-label="RSS Feed">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="6.18" cy="17.82" r="2.18"/>
+          <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/>
+        </svg>
+      </a>
+    </div>
+    {posts.length === 0 && <p class="empty">Nothing here yet.</p>}
+    <ul>
+      {posts.map((post) => (
+        <li class="animate-scroll">
+          <a href={`/blog/${post.id}/`}>
+            <div class="post-info">
+              <span class="title">{post.data.title}</span>
+              <span class="description">{post.data.description}</span>
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+            </div>
+            {post.data.image && (
+              <img src={post.data.image} alt={post.data.title} class="post-thumbnail" />
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-list {
+    max-width: 58rem;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .blog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  h1 {
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .rss-link {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+  }
+
+  .rss-link:hover {
+    color: var(--text);
+  }
+
+  .empty {
+    color: var(--text-secondary);
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li a {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .title {
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .post-thumbnail {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  @media screen and (max-width: 600px) {
+    li a {
+      gap: 1rem;
+    }
+
+    .post-thumbnail {
+      width: 80px;
+      height: 56px;
+    }
+  }
+</style>

@@ -1,0 +1,128 @@
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ * This file is part of the code for tristarvoid.github.io
+ * The code for tristarvoid.github.io is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * The code for tristarvoid.github.io is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with the code for tristarvoid.github.io. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text: #111111;
+  --text-secondary: #555555;
+  --border: #e0e0e0;
+  --link: #111111;
+  --link-hover: #555555;
+}
+
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --bg-secondary: #161616;
+  --text: #e0e0e0;
+  --text-secondary: #999999;
+  --border: #2a2a2a;
+  --link: #e0e0e0;
+  --link-hover: #999999;
+}
+
+html {
+  font-family: "Lato", sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+::selection {
+  background: rgba(128, 128, 128, 0.2);
+  color: var(--text);
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Entrance animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-entrance {
+  opacity: 0;
+  animation: fade-up 0.6s ease forwards;
+}
+
+.animate-entrance:nth-child(1) { animation-delay: 0s; }
+.animate-entrance:nth-child(2) { animation-delay: 0.1s; }
+.animate-entrance:nth-child(3) { animation-delay: 0.2s; }
+.animate-entrance:nth-child(4) { animation-delay: 0.3s; }
+
+/* Scroll-triggered animations */
+.animate-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animate-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* View Transition API: disable default cross-fade, let JS control clip-path */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+[data-theme-transitioning] * {
+  view-transition-name: none !important;
+}

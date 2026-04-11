@@ -1,0 +1,52 @@
+---
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ */
+import ThemeToggle from "./ThemeToggle.astro";
+---
+
+<header transition:persist="header">
+  <a href="/" class="home-link">Home</a>
+
+  <nav>
+    <a href="/blog/">Blog</a>
+    <a href="/projects/">Projects</a>
+    <ThemeToggle />
+  </nav>
+</header>
+
+<style>
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .home-link {
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+</style>

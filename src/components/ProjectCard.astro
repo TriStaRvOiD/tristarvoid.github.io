@@ -1,0 +1,123 @@
+---
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ */
+interface Props {
+  name: string;
+  description: string;
+  tech: string[];
+  github: string;
+  live?: string;
+}
+
+const { name, description, tech, github, live } = Astro.props;
+---
+
+<article class="project-card">
+  <h3>
+    <a href={github} target="_blank" rel="noopener noreferrer">{name}</a>
+  </h3>
+  <p>{description}</p>
+  <div class="tech-tags">
+    {tech.map((t) => <span class="tag">{t}</span>)}
+  </div>
+  {live && (
+    <a href={live} target="_blank" rel="noopener noreferrer" class="live-link">
+      Live
+    </a>
+  )}
+</article>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll(".project-card").forEach((card) => {
+      card.addEventListener("mousemove", (e) => {
+        const el = card as HTMLElement;
+        const rect = el.getBoundingClientRect();
+        el.style.setProperty("--mouse-x", `${(e as MouseEvent).clientX - rect.left}px`);
+        el.style.setProperty("--mouse-y", `${(e as MouseEvent).clientY - rect.top}px`);
+      });
+    });
+  });
+</script>
+
+<style>
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .project-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--text-secondary) 1px, transparent 1px);
+    background-size: 20px 20px;
+    -webkit-mask-image: radial-gradient(
+      circle 100px at var(--mouse-x, -200px) var(--mouse-y, -200px),
+      black,
+      transparent 70%
+    );
+    mask-image: radial-gradient(
+      circle 100px at var(--mouse-x, -200px) var(--mouse-y, -200px),
+      black,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .project-card:hover::before {
+    opacity: 0.4;
+  }
+
+  .project-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .project-card:hover {
+    border-color: var(--text-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  h3 {
+    font-family: "Josefin Sans", sans-serif;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+
+  .live-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .live-link:hover {
+    color: var(--text);
+  }
+</style>

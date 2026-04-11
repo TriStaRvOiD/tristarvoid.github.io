@@ -1,0 +1,30 @@
+---
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ */
+---
+
+<video class="profile-video" width="210" height="210" preload="metadata" playsinline>
+  <source src="/assets/profile-video.mp4" type="video/mp4" />
+</video>
+
+<style>
+  .profile-video {
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    object-fit: cover;
+    user-select: none;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const video = document.querySelector(".profile-video") as HTMLVideoElement;
+    video?.addEventListener("click", () => {
+      if (video.paused) video.play();
+      else video.pause();
+    });
+  });
+</script>
