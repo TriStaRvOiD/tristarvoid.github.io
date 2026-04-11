@@ -2,11 +2,12 @@
 /*
  * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
  */
-import "@fontsource/montserrat/400.css";
-import "@fontsource/montserrat/600.css";
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/700.css";
+import "@fontsource/josefin-sans/600.css";
 import "@fontsource/lora/400.css";
 import "@fontsource/lora/400-italic.css";
-import montserratLatin400 from "@fontsource/montserrat/files/montserrat-latin-400-normal.woff2?url";
+import latoLatin400 from "@fontsource/lato/files/lato-latin-400-normal.woff2?url";
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -22,7 +23,7 @@ const { title = "TriStaRvOiD", description = "Hey there." } = Astro.props;
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="preload" as="font" type="font/woff2" href={montserratLatin400} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={latoLatin400} crossorigin />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
