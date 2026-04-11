@@ -49,6 +49,11 @@ body {
   flex-direction: column;
 }
 
+::selection {
+  background: rgba(128, 128, 128, 0.2);
+  color: var(--text);
+}
+
 a {
   color: var(--link);
   text-decoration: none;
@@ -65,6 +70,40 @@ video {
   height: auto;
 }
 
+/* Entrance animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-entrance {
+  opacity: 0;
+  animation: fade-up 0.6s ease forwards;
+}
+
+.animate-entrance:nth-child(1) { animation-delay: 0s; }
+.animate-entrance:nth-child(2) { animation-delay: 0.1s; }
+.animate-entrance:nth-child(3) { animation-delay: 0.2s; }
+.animate-entrance:nth-child(4) { animation-delay: 0.3s; }
+
+/* Scroll-triggered animations */
+.animate-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animate-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* View Transition API: disable default cross-fade, let JS control clip-path */
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -74,4 +113,8 @@ video {
 
 ::view-transition-image-pair(root) {
   isolation: auto;
+}
+
+[data-theme-transitioning] * {
+  view-transition-name: none !important;
 }

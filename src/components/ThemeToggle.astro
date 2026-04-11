@@ -116,6 +116,8 @@
       Math.max(y, innerHeight - y)
     );
 
+    document.documentElement.setAttribute("data-theme-transitioning", "");
+
     const transition = (document as any).startViewTransition(() => {
       applyTheme(next);
     });
@@ -134,6 +136,10 @@
           pseudoElement: "::view-transition-new(root)",
         }
       );
+    });
+
+    transition.finished.then(() => {
+      document.documentElement.removeAttribute("data-theme-transitioning");
     });
   });
 </script>

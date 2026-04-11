@@ -11,21 +11,23 @@ import { projects } from "../data/projects";
 
 <BaseLayout>
   <section class="hero">
-    <ProfileVideo />
-    <h1>TriStaRvOiD</h1>
-    <p class="tagline">Mobile app engineer</p>
-    <SocialLinks />
+    <div class="animate-entrance"><ProfileVideo /></div>
+    <h1 class="animate-entrance">TriStaRvOiD</h1>
+    <p class="tagline animate-entrance">Mobile app engineer</p>
+    <div class="animate-entrance"><SocialLinks /></div>
   </section>
 
   {projects.length > 0 && (
     <section class="featured">
-      <div class="section-header">
+      <div class="section-header animate-scroll">
         <h2>Projects</h2>
         <a href="/projects/">View all</a>
       </div>
       <div class="project-grid">
         {projects.map((project) => (
-          <ProjectCard {...project} />
+          <div class="animate-scroll">
+            <ProjectCard {...project} />
+          </div>
         ))}
       </div>
     </section>
@@ -92,5 +94,6 @@ import { projects } from "../data/projects";
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
   }
+
 
 </style>

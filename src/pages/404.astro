@@ -1,0 +1,168 @@
+---
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ */
+import "@fontsource/lato/400.css";
+import "@fontsource/josefin-sans/600.css";
+import "../styles/global.css";
+import Starfield from "../components/Starfield.astro";
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Page not found." />
+    <title>Lost in the Void | TriStaRvOiD</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <Starfield />
+    <main class="void">
+      <div class="constellation-container">
+        <!-- Orion's Belt -->
+        <svg class="constellation" data-constellation="0" width="200" height="60" viewBox="0 0 120 30" aria-hidden="true">
+          <defs>
+            <radialGradient id="ob1"><stop offset="0%" stop-color="#fff" stop-opacity="0.3"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="ob2"><stop offset="0%" stop-color="#fff" stop-opacity="0.5"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="20" cy="17" r="10" fill="url(#ob1)"/><circle cx="20" cy="17" r="1.8" fill="#fff" opacity="0.5"/>
+          <circle cx="60" cy="13" r="14" fill="url(#ob2)"/><circle cx="60" cy="13" r="2.5" fill="#fff" opacity="0.9"/>
+          <circle cx="100" cy="17" r="10" fill="url(#ob1)"/><circle cx="100" cy="17" r="1.8" fill="#fff" opacity="0.5"/>
+          <line x1="20" y1="17" x2="60" y2="13" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="60" y1="13" x2="100" y2="17" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+        </svg>
+
+        <!-- Cassiopeia -->
+        <svg class="constellation" data-constellation="1" width="200" height="100" viewBox="0 0 200 120" aria-hidden="true">
+          <defs>
+            <radialGradient id="ca1"><stop offset="0%" stop-color="#fff" stop-opacity="0.4"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="ca2"><stop offset="0%" stop-color="#fff" stop-opacity="0.5"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="20" cy="50" r="9" fill="url(#ca1)"/><circle cx="20" cy="50" r="1.8" fill="#fff" opacity="0.6"/>
+          <circle cx="60" cy="25" r="10" fill="url(#ca1)"/><circle cx="60" cy="25" r="2" fill="#fff" opacity="0.7"/>
+          <circle cx="100" cy="70" r="12" fill="url(#ca2)"/><circle cx="100" cy="70" r="2.5" fill="#fff" opacity="0.9"/>
+          <circle cx="140" cy="30" r="11" fill="url(#ca2)"/><circle cx="140" cy="30" r="2.2" fill="#fff" opacity="0.8"/>
+          <circle cx="180" cy="55" r="9" fill="url(#ca1)"/><circle cx="180" cy="55" r="1.8" fill="#fff" opacity="0.6"/>
+          <line x1="20" y1="50" x2="60" y2="25" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="60" y1="25" x2="100" y2="70" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="100" y1="70" x2="140" y2="30" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="140" y1="30" x2="180" y2="55" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+        </svg>
+
+        <!-- Lyra -->
+        <svg class="constellation" data-constellation="2" width="120" height="160" viewBox="0 0 120 160" aria-hidden="true">
+          <defs>
+            <radialGradient id="ly1"><stop offset="0%" stop-color="#fff" stop-opacity="0.6"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="ly2"><stop offset="0%" stop-color="#fff" stop-opacity="0.3"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="60" cy="20" r="16" fill="url(#ly1)"/><circle cx="60" cy="20" r="3" fill="#fff" opacity="0.95"/>
+          <circle cx="45" cy="65" r="8" fill="url(#ly2)"/><circle cx="45" cy="65" r="1.5" fill="#fff" opacity="0.5"/>
+          <circle cx="75" cy="65" r="8" fill="url(#ly2)"/><circle cx="75" cy="65" r="1.5" fill="#fff" opacity="0.5"/>
+          <circle cx="40" cy="120" r="9" fill="url(#ly2)"/><circle cx="40" cy="120" r="1.8" fill="#fff" opacity="0.6"/>
+          <circle cx="80" cy="120" r="9" fill="url(#ly2)"/><circle cx="80" cy="120" r="1.8" fill="#fff" opacity="0.6"/>
+          <line x1="60" y1="20" x2="45" y2="65" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="60" y1="20" x2="75" y2="65" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="45" y1="65" x2="75" y2="65" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="45" y1="65" x2="40" y2="120" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="75" y1="65" x2="80" y2="120" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="40" y1="120" x2="80" y2="120" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+        </svg>
+
+        <!-- Crux (Southern Cross) -->
+        <svg class="constellation" data-constellation="3" width="120" height="160" viewBox="0 0 120 160" aria-hidden="true">
+          <defs>
+            <radialGradient id="cr1"><stop offset="0%" stop-color="#fff" stop-opacity="0.5"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="cr2"><stop offset="0%" stop-color="#fff" stop-opacity="0.35"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="60" cy="20" r="11" fill="url(#cr1)"/><circle cx="60" cy="20" r="2.2" fill="#fff" opacity="0.8"/>
+          <circle cx="60" cy="140" r="13" fill="url(#cr1)"/><circle cx="60" cy="140" r="2.5" fill="#fff" opacity="0.9"/>
+          <circle cx="20" cy="75" r="9" fill="url(#cr2)"/><circle cx="20" cy="75" r="1.8" fill="#fff" opacity="0.55"/>
+          <circle cx="100" cy="70" r="11" fill="url(#cr1)"/><circle cx="100" cy="70" r="2.2" fill="#fff" opacity="0.8"/>
+          <line x1="60" y1="20" x2="60" y2="140" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+          <line x1="20" y1="75" x2="100" y2="70" stroke="#fff" stroke-width="0.3" opacity="0.08"/>
+        </svg>
+      </div>
+
+      <h1>Lost in the Void</h1>
+      <a href="/" class="way-back">Find your way back &rarr;</a>
+    </main>
+    <footer>
+      <p>&copy; 2023-2026 TriStaRvOiD</p>
+    </footer>
+  </body>
+</html>
+
+<script is:inline>
+  (function () {
+    var svgs = document.querySelectorAll("[data-constellation]");
+    var pick = Math.floor(Math.random() * svgs.length);
+    for (var i = 0; i < svgs.length; i++) {
+      svgs[i].style.display = i === pick ? "block" : "none";
+    }
+  })();
+</script>
+
+<style>
+  body {
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+  }
+
+  .void {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 5rem);
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .constellation-container {
+    margin-bottom: 3rem;
+  }
+
+  .constellation {
+    display: none;
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    letter-spacing: 0.04em;
+    margin-bottom: 2rem;
+  }
+
+  .way-back {
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #777777;
+    letter-spacing: 0.02em;
+    padding: 0.6rem 1.4rem;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .way-back:hover {
+    color: #e0e0e0;
+    border-color: #666666;
+  }
+
+  footer {
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #999999;
+  }
+</style>

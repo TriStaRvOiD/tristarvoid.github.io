@@ -28,16 +28,66 @@ const { name, description, tech, github, live } = Astro.props;
   )}
 </article>
 
+<script>
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll(".project-card").forEach((card) => {
+      card.addEventListener("mousemove", (e: Event) => {
+        const el = card as HTMLElement;
+        const rect = el.getBoundingClientRect();
+        const me = e as MouseEvent;
+        el.style.setProperty("--mouse-x", `${me.clientX - rect.left}px`);
+        el.style.setProperty("--mouse-y", `${me.clientY - rect.top}px`);
+      });
+    });
+  });
+</script>
+
 <style>
   .project-card {
+    position: relative;
+    overflow: hidden;
     padding: 1.5rem;
+    background-color: var(--bg);
     border: 1px solid var(--border);
     border-radius: 8px;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .project-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--text-secondary) 1px, transparent 1px);
+    background-size: 20px 20px;
+    -webkit-mask-image: radial-gradient(
+      circle 100px at var(--mouse-x, -200px) var(--mouse-y, -200px),
+      black,
+      transparent 70%
+    );
+    mask-image: radial-gradient(
+      circle 100px at var(--mouse-x, -200px) var(--mouse-y, -200px),
+      black,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .project-card:hover::before {
+    opacity: 0.4;
+  }
+
+  .project-card > * {
+    position: relative;
+    z-index: 1;
   }
 
   .project-card:hover {
     border-color: var(--text-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   h3 {

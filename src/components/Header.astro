@@ -5,8 +5,9 @@
 import ThemeToggle from "./ThemeToggle.astro";
 ---
 
-<header>
-  <a href="/" class="site-name">TriStaRvOiD</a>
+<header transition:persist="header">
+  <a href="/" class="home-link">Home</a>
+
   <nav>
     <a href="/blog/">Blog</a>
     <a href="/projects/">Projects</a>
@@ -29,9 +30,9 @@ import ThemeToggle from "./ThemeToggle.astro";
     border-bottom: 1px solid var(--border);
   }
 
-  .site-name {
+  .home-link {
     font-family: "Josefin Sans", sans-serif;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: 0.02em;
   }

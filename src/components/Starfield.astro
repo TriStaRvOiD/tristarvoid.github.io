@@ -1,0 +1,472 @@
+---
+/*
+ * Copyright (C) Aditya 2023-2026 <github.com/TriStaRvOiD>
+ */
+---
+
+<canvas id="starfield" transition:persist="starfield"></canvas>
+
+<style>
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById("starfield") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d")!;
+
+  // Fade out constellations on individual blog post pages
+  let isBlogPost = /^\/blog\/.+/.test(window.location.pathname);
+
+  // --- Dark mode: twinkling stars ---
+
+  interface Star {
+    x: number;
+    y: number;
+    size: number;
+    baseOpacity: number;
+    drift: number;
+    twinkleSpeed: number;
+    twinkleOffset: number;
+  }
+
+  // --- Light mode: constellation figures ---
+
+  type ConstellationShape = { points: [number, number][]; lines: [number, number][] };
+
+  const shapes: ConstellationShape[] = [
+    // Triangle
+    {
+      points: [[0, -20], [-18, 18], [18, 18]],
+      lines: [[0, 1], [1, 2], [2, 0]],
+    },
+    // Orion's Belt
+    {
+      points: [[-25, 2], [0, -2], [25, 2]],
+      lines: [[0, 1], [1, 2]],
+    },
+    // Arc
+    {
+      points: [[-22, 14], [0, -14], [22, 14]],
+      lines: [[0, 1], [1, 2]],
+    },
+    // Dots only (no lines)
+    {
+      points: [[0, -16], [-12, 14], [12, 14]],
+      lines: [],
+    },
+  ];
+
+  interface Constellation {
+    x: number;
+    y: number;
+    rotation: number;
+    scale: number;
+    shapeIndex: number;
+    dotOpacities: number[];
+    sizes: number[];
+    driftX: number;
+    driftY: number;
+    driftSpeed: number;
+    driftOffset: number;
+  }
+
+  interface ExclusionRect {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  }
+
+  let stars: Star[] = [];
+  let constellations: Constellation[] = [];
+  let exclusionRects: ExclusionRect[] = [];
+  let scrollY = 0;
+  let pageHeight = 0;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    pageHeight = document.documentElement.scrollHeight;
+    computeExclusionZones();
+    generateStars();
+    generateConstellations();
+  }
+
+  function computeExclusionZones() {
+    exclusionRects = [];
+    const pad = 25;
+
+    // Exclude the hero content column
+    const hero = document.querySelector(".hero");
+    if (hero) {
+      const rect = hero.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const contentWidth = 280;
+      exclusionRects.push({
+        left: centerX - contentWidth / 2 - pad,
+        top: rect.top + scrollY - pad,
+        right: centerX + contentWidth / 2 + pad,
+        bottom: rect.bottom + scrollY + pad,
+      });
+    }
+
+    // Exclude text-heavy content sections (narrow, max-width constrained)
+    const sections = document.querySelectorAll(
+      ".featured, .projects, .blog-list, .blog-post"
+    );
+    sections.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      exclusionRects.push({
+        left: rect.left - pad,
+        top: rect.top + scrollY - pad,
+        right: rect.right + pad,
+        bottom: rect.bottom + scrollY + pad,
+      });
+    });
+  }
+
+  function isExcluded(x: number, y: number): boolean {
+    for (const r of exclusionRects) {
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return true;
+    }
+    return false;
+  }
+
+  function generateStars() {
+    const area = window.innerWidth * pageHeight;
+    const count = Math.floor(area / 12000);
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * pageHeight,
+        size: Math.random() * 1.5 + 0.5,
+        baseOpacity: Math.random() * 0.4 + 0.1,
+        drift: (Math.random() - 0.5) * 0.15,
+        twinkleSpeed: Math.random() * 0.02 + 0.005,
+        twinkleOffset: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  function generateConstellations() {
+    const w = window.innerWidth;
+    const cellSize = 160;
+    const cols = Math.ceil(w / cellSize);
+    const rows = Math.ceil(pageHeight / cellSize);
+    constellations = [];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const x = col * cellSize + Math.random() * cellSize;
+        const y = row * cellSize + Math.random() * cellSize;
+        if (isExcluded(x, y)) continue;
+        // Minimum distance check to prevent overlap
+        const minDist = 90;
+        let tooClose = false;
+        for (const existing of constellations) {
+          const dx = x - existing.x;
+          const dy = y - existing.y;
+          if (dx * dx + dy * dy < minDist * minDist) {
+            tooClose = true;
+            break;
+          }
+        }
+        if (tooClose) continue;
+        constellations.push({
+          x,
+          y,
+          rotation: Math.random() * Math.PI * 2,
+          scale: Math.random() * 0.4 + 0.6,
+          shapeIndex: Math.floor(Math.random() * shapes.length),
+          dotOpacities: [
+            Math.random() * 0.15 + 0.35,
+            Math.random() * 0.1 + 0.2,
+            Math.random() * 0.08 + 0.1,
+          ],
+          sizes: [
+            Math.random() * 0.8 + 2.5,
+            Math.random() * 0.6 + 1.8,
+            Math.random() * 0.5 + 1.2,
+          ],
+          driftX: (Math.random() - 0.5) * 2,
+          driftY: (Math.random() - 0.5) * 2,
+          driftSpeed: Math.random() * 0.008 + 0.003,
+          driftOffset: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+  }
+
+  // --- Shooting stars ---
+
+  interface ShootingStar {
+    x: number;
+    y: number;
+    angle: number;
+    speed: number;
+    length: number;
+    opacity: number;
+    life: number;
+    maxLife: number;
+  }
+
+  let shootingStars: ShootingStar[] = [];
+  let nextShootingStarTime = Math.random() * 300 + 300;
+
+  function spawnShootingStar() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    // Start from a random point in the upper portion of the viewport
+    const x = Math.random() * w;
+    const y = Math.random() * h * 0.5;
+    const angle = 30 * (Math.PI / 180);
+    const maxLife = Math.random() * 20 + 30;
+    shootingStars.push({
+      x,
+      y,
+      angle,
+      speed: Math.random() * 6 + 8,
+      length: Math.random() * 40 + 60,
+      opacity: Math.random() * 0.3 + 0.5,
+      life: 0,
+      maxLife,
+    });
+  }
+
+  function updateAndDrawShootingStars() {
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const s = shootingStars[i];
+      s.life++;
+
+      const progress = s.life / s.maxLife;
+      // Fade in quickly, fade out gradually
+      const alpha = progress < 0.2
+        ? (progress / 0.2) * s.opacity
+        : s.opacity * (1 - (progress - 0.2) / 0.8);
+
+      if (s.life > s.maxLife) {
+        shootingStars.splice(i, 1);
+        continue;
+      }
+
+      const dx = Math.cos(s.angle) * s.speed;
+      const dy = Math.sin(s.angle) * s.speed;
+      s.x += dx;
+      s.y += dy;
+
+      // Draw the trail
+      const tailX = s.x - Math.cos(s.angle) * s.length;
+      const tailY = s.y - Math.sin(s.angle) * s.length;
+
+      const gradient = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+      gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+      gradient.addColorStop(1, `rgba(255, 255, 255, ${Math.max(0, alpha)})`);
+
+      ctx.beginPath();
+      ctx.moveTo(tailX, tailY);
+      ctx.lineTo(s.x, s.y);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Bright head dot
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 1, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, alpha)})`;
+      ctx.fill();
+    }
+  }
+
+  // --- Cursor star trail (dark mode only) ---
+
+  interface TrailParticle {
+    x: number;
+    y: number;
+    size: number;
+    opacity: number;
+    decay: number;
+  }
+
+  let trailParticles: TrailParticle[] = [];
+  let mouseX = -1;
+  let mouseY = -1;
+  let lastTrailX = -1;
+  let lastTrailY = -1;
+
+  function onMouseMove(e: MouseEvent) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+
+  function updateTrail() {
+    // Only spawn if mouse has moved enough
+    if (mouseX < 0) return;
+    const dx = mouseX - lastTrailX;
+    const dy = mouseY - lastTrailY;
+    if (dx * dx + dy * dy > 100) {
+      trailParticles.push({
+        x: mouseX,
+        y: mouseY,
+        size: Math.random() * 1.2 + 0.5,
+        opacity: Math.random() * 0.3 + 0.2,
+        decay: Math.random() * 0.015 + 0.01,
+      });
+      lastTrailX = mouseX;
+      lastTrailY = mouseY;
+    }
+
+    // Update and draw
+    for (let i = trailParticles.length - 1; i >= 0; i--) {
+      const p = trailParticles[i];
+      p.opacity -= p.decay;
+      if (p.opacity <= 0) {
+        trailParticles.splice(i, 1);
+        continue;
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  window.addEventListener("mousemove", onMouseMove, { passive: true });
+
+  let time = 0;
+
+  function isDark(): boolean {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
+
+  function drawDarkMode(h: number) {
+    const parallaxOffset = scrollY * 0.15;
+
+    for (const star of stars) {
+      const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
+      const opacity = star.baseOpacity + twinkle * 0.15;
+
+      if (opacity <= 0) continue;
+
+      const x = star.x + Math.sin(time * 0.001 + star.twinkleOffset) * star.drift * 20;
+      const y = star.y - scrollY + parallaxOffset;
+
+      if (y < -10 || y > h + 10) continue;
+
+      ctx.beginPath();
+      ctx.arc(x, y, star.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(opacity, 0.55))})`;
+      ctx.fill();
+    }
+  }
+
+  function drawLightMode(h: number) {
+    const parallaxOffset = scrollY * 0.1;
+
+    for (const c of constellations) {
+      const cy = c.y - scrollY + parallaxOffset;
+
+      if (cy < -60 || cy > h + 60) continue;
+
+      const shape = shapes[c.shapeIndex];
+      const cos = Math.cos(c.rotation);
+      const sin = Math.sin(c.rotation);
+
+      const driftOfsX = Math.sin(time * c.driftSpeed + c.driftOffset) * c.driftX * 8;
+      const driftOfsY = Math.cos(time * c.driftSpeed + c.driftOffset * 1.3) * c.driftY * 8;
+
+      const transformed = shape.points.map(([px, py]) => {
+        const sx = px * c.scale;
+        const sy = py * c.scale;
+        return [c.x + driftOfsX + sx * cos - sy * sin, cy + driftOfsY + sx * sin + sy * cos] as [number, number];
+      });
+
+      // Draw connecting lines (thin, faint)
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.07)";
+      ctx.lineWidth = 0.5;
+      for (const [a, b] of shape.lines) {
+        ctx.beginPath();
+        ctx.moveTo(transformed[a][0], transformed[a][1]);
+        ctx.lineTo(transformed[b][0], transformed[b][1]);
+        ctx.stroke();
+      }
+
+      // Draw star dots (each with its own opacity: dark, medium, light)
+      for (let i = 0; i < transformed.length; i++) {
+        ctx.beginPath();
+        ctx.arc(transformed[i][0], transformed[i][1], c.sizes[i], 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 0, 0, ${c.dotOpacities[i]})`;
+        ctx.fill();
+      }
+    }
+  }
+
+  function draw() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    ctx.clearRect(0, 0, w, h);
+
+    if (isDark()) {
+      drawDarkMode(h);
+      // Shooting stars
+      nextShootingStarTime--;
+      if (nextShootingStarTime <= 0) {
+        spawnShootingStar();
+        nextShootingStarTime = Math.random() * 300 + 300;
+      }
+      updateAndDrawShootingStars();
+      if (!isBlogPost) updateTrail();
+    } else if (!isBlogPost) {
+      drawLightMode(h);
+    }
+
+    time++;
+    requestAnimationFrame(draw);
+  }
+
+  function onScroll() {
+    scrollY = window.scrollY;
+  }
+
+  function updateForCurrentPage() {
+    isBlogPost = /^\/blog\/.+/.test(window.location.pathname);
+    scrollY = window.scrollY;
+    pageHeight = document.documentElement.scrollHeight;
+    computeExclusionZones();
+    generateConstellations();
+
+    if (isBlogPost) {
+      canvas.style.opacity = "0";
+    } else {
+      canvas.style.opacity = "1";
+    }
+  }
+
+  // Initial setup
+  updateForCurrentPage();
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", resize);
+
+  // Re-initialize on client-side navigation
+  document.addEventListener("astro:page-load", () => {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    updateForCurrentPage();
+  });
+
+  resize();
+  draw();
+</script>

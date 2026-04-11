@@ -20,9 +20,11 @@
 </style>
 
 <script>
-  const video = document.querySelector(".profile-video") as HTMLVideoElement;
-  video?.addEventListener("click", () => {
-    if (video.paused) video.play();
-    else video.pause();
+  document.addEventListener("astro:page-load", () => {
+    const video = document.querySelector(".profile-video") as HTMLVideoElement;
+    video?.addEventListener("click", () => {
+      if (video.paused) video.play();
+      else video.pause();
+    });
   });
 </script>
