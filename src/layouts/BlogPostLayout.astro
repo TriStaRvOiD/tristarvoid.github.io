@@ -10,37 +10,141 @@ interface Props {
     pubDate: Date;
     description: string;
     tags?: string[];
+    image?: string;
+    updatedDate?: Date;
   };
+  readingTime?: number;
 }
 
-const { frontmatter } = Astro.props;
+const { frontmatter, readingTime } = Astro.props;
+const pageUrl = Astro.url.href;
 ---
 
 <BaseLayout title={`${frontmatter.title} | TriStaRvOiD`} description={frontmatter.description}>
+  <div class="progress-bar" id="progress-bar"></div>
   <article class="blog-post">
     <header>
       <a href="/blog/" class="back">&larr; Back</a>
-      <h1>{frontmatter.title}</h1>
-      <time datetime={frontmatter.pubDate.toISOString()}>
-        {frontmatter.pubDate.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </time>
-      {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <div class="tags">
-          {frontmatter.tags.map((tag) => <span class="tag">{tag}</span>)}
-        </div>
+      {frontmatter.image && (
+        <img src={frontmatter.image} alt="" class="hero-image" />
       )}
+      <h1>{frontmatter.title}</h1>
+      <div class="meta-row">
+        <div class="dates">
+          <time datetime={frontmatter.pubDate.toISOString()}>
+            {frontmatter.pubDate.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </time>
+          {frontmatter.updatedDate && (
+            <>
+              <span class="date-sep">&middot;</span>
+              <span class="updated">Updated <time datetime={frontmatter.updatedDate.toISOString()}>
+                {frontmatter.updatedDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time></span>
+            </>
+          )}
+        </div>
+        {readingTime && (
+          <>
+            <span class="date-sep">&middot;</span>
+            <span class="reading-time">{readingTime} min read</span>
+          </>
+        )}
+      </div>
+      <div class="tags-row">
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div class="tags">
+            {frontmatter.tags.map((tag) => <span class="tag">{tag}</span>)}
+          </div>
+        )}
+        <button class="copy-link" aria-label="Copy link" data-url={pageUrl}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </button>
+      </div>
     </header>
     <div class="content">
       <slot />
     </div>
   </article>
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
 </BaseLayout>
 
+<script>
+  let blogPostAbort: AbortController | null = null;
+
+  document.addEventListener("astro:page-load", () => {
+    // Abort previous listeners from prior navigation
+    blogPostAbort?.abort();
+    blogPostAbort = new AbortController();
+    const signal = blogPostAbort.signal;
+
+    // Clean up any previous progress bar from header
+    document.querySelectorAll("header .progress-bar").forEach((el) => el.remove());
+
+    // Move progress bar into header so it follows sticky positioning during overscroll
+    const progressBar = document.getElementById("progress-bar");
+    const header = document.querySelector("header") as HTMLElement;
+    if (progressBar && header) {
+      header.appendChild(progressBar);
+      window.addEventListener("scroll", () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        progressBar.style.width = `${progress}%`;
+      }, { passive: true, signal });
+    }
+
+    // Back to top
+    const btn = document.getElementById("back-to-top");
+    if (btn) {
+      window.addEventListener("scroll", () => {
+        btn.classList.toggle("visible", window.scrollY > 200);
+      }, { passive: true, signal });
+      btn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, { signal });
+    }
+
+    // Copy link
+    document.querySelectorAll(".copy-link").forEach((el) => {
+      el.addEventListener("click", () => {
+        const url = (el as HTMLElement).dataset.url;
+        if (url) {
+          navigator.clipboard.writeText(url);
+          const svg = el.querySelector("svg")!;
+          svg.style.opacity = "0.4";
+          setTimeout(() => { svg.style.opacity = "1"; }, 600);
+        }
+      }, { signal });
+    });
+  });
+</script>
+
 <style>
+  .progress-bar {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--text);
+    z-index: 200;
+  }
+
   .blog-post {
     max-width: 42rem;
     margin: 0 auto;
@@ -60,21 +164,55 @@ const { frontmatter } = Astro.props;
     color: var(--text);
   }
 
+  .hero-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
   h1 {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
     line-height: 1.3;
   }
 
-  time {
+  .meta-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
     font-size: 0.85rem;
     color: var(--text-secondary);
+  }
+
+  .dates {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .date-sep {
+    color: var(--border);
+  }
+
+  .updated {
+    font-style: italic;
+  }
+
+  .reading-time {
+    white-space: nowrap;
+  }
+
+  .tags-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    gap: 1rem;
   }
 
   .tags {
     display: flex;
     gap: 0.5rem;
-    margin-top: 0.75rem;
   }
 
   .tag {
@@ -87,7 +225,7 @@ const { frontmatter } = Astro.props;
 
   .content {
     margin-top: 2rem;
-    font-family: "Lora", serif;
+    font-family: "Source Serif Pro", serif;
     line-height: 1.8;
     font-size: 1.05rem;
   }
@@ -145,5 +283,55 @@ const { frontmatter } = Astro.props;
     padding-left: 1rem;
     color: var(--text-secondary);
     margin-bottom: 1rem;
+  }
+
+  .copy-link {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .copy-link:hover {
+    color: var(--text);
+  }
+
+  .back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, color 0.2s ease, border-color 0.2s ease;
+    view-transition-name: back-to-top;
+    z-index: 150;
+  }
+
+  :global(::view-transition-group(back-to-top)) {
+    z-index: 150;
+  }
+
+  .back-to-top:global(.visible) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .back-to-top:hover {
+    color: var(--text);
+    border-color: var(--text-secondary);
   }
 </style>
