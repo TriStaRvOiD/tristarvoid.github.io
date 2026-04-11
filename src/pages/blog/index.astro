@@ -38,7 +38,7 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
               </time>
             </div>
             {post.data.image && (
-              <img src={post.data.image} alt="" class="post-thumbnail" />
+              <img src={post.data.image} alt={post.data.title} class="post-thumbnail" />
             )}
           </a>
         </li>

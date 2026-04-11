@@ -124,10 +124,11 @@ const pageUrl = Astro.url.href;
       el.addEventListener("click", () => {
         const url = (el as HTMLElement).dataset.url;
         if (url) {
-          navigator.clipboard.writeText(url);
-          const svg = el.querySelector("svg")!;
-          svg.style.opacity = "0.4";
-          setTimeout(() => { svg.style.opacity = "1"; }, 600);
+          navigator.clipboard.writeText(url).then(() => {
+            const svg = el.querySelector("svg") as SVGElement;
+            svg.style.opacity = "0.4";
+            setTimeout(() => { svg.style.opacity = "1"; }, 600);
+          }).catch(() => {});
         }
       }, { signal });
     });
@@ -215,13 +216,6 @@ const pageUrl = Astro.url.href;
     gap: 0.5rem;
   }
 
-  .tag {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    background-color: var(--bg-secondary);
-    color: var(--text-secondary);
-  }
 
   .content {
     margin-top: 2rem;

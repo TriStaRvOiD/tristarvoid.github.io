@@ -24,7 +24,7 @@ import { projects } from "../data/projects";
         <a href="/projects/">View all</a>
       </div>
       <div class="project-grid">
-        {projects.map((project) => (
+        {projects.slice(0, 2).map((project) => (
           <div class="animate-scroll">
             <ProjectCard {...project} />
           </div>

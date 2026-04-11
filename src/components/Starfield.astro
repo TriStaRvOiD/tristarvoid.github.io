@@ -170,7 +170,6 @@
       for (let col = 0; col < cols; col++) {
         const x = col * cellSize + Math.random() * cellSize;
         const y = row * cellSize + Math.random() * cellSize;
-        if (isExcluded(x, y)) continue;
         // Minimum distance check to prevent overlap
         const minDist = 90;
         let tooClose = false;
@@ -222,7 +221,8 @@
   }
 
   let shootingStars: ShootingStar[] = [];
-  let nextShootingStarTime = Math.random() * 300 + 300;
+  let lastShootingStarTime = performance.now();
+  let nextShootingStarDelay = (Math.random() * 5 + 5) * 1000;
 
   function spawnShootingStar() {
     const w = window.innerWidth;
@@ -377,6 +377,7 @@
       const cy = c.y - scrollY + parallaxOffset;
 
       if (cy < -60 || cy > h + 60) continue;
+      if (isExcluded(c.x, c.y)) continue;
 
       const shape = shapes[c.shapeIndex];
       const cos = Math.cos(c.rotation);
@@ -412,21 +413,26 @@
   }
 
   function draw() {
+    if (isBlogPost) {
+      requestAnimationFrame(draw);
+      return;
+    }
+
     const w = window.innerWidth;
     const h = window.innerHeight;
     ctx.clearRect(0, 0, w, h);
 
     if (isDark()) {
       drawDarkMode(h);
-      // Shooting stars
-      nextShootingStarTime--;
-      if (nextShootingStarTime <= 0) {
+      const now = performance.now();
+      if (now - lastShootingStarTime > nextShootingStarDelay) {
         spawnShootingStar();
-        nextShootingStarTime = Math.random() * 300 + 300;
+        lastShootingStarTime = now;
+        nextShootingStarDelay = (Math.random() * 5 + 5) * 1000;
       }
       updateAndDrawShootingStars();
-      if (!isBlogPost) updateTrail();
-    } else if (!isBlogPost) {
+      updateTrail();
+    } else {
       drawLightMode(h);
     }
 
@@ -443,7 +449,6 @@
     scrollY = window.scrollY;
     pageHeight = document.documentElement.scrollHeight;
     computeExclusionZones();
-    generateConstellations();
 
     if (isBlogPost) {
       canvas.style.opacity = "0";
@@ -464,6 +469,8 @@
     canvas.width = window.innerWidth * dpr;
     canvas.height = window.innerHeight * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    pageHeight = document.documentElement.scrollHeight;
+    generateStars();
     updateForCurrentPage();
   });
 

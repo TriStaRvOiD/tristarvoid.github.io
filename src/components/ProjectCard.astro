@@ -31,12 +31,11 @@ const { name, description, tech, github, live } = Astro.props;
 <script>
   document.addEventListener("astro:page-load", () => {
     document.querySelectorAll(".project-card").forEach((card) => {
-      card.addEventListener("mousemove", (e: Event) => {
+      card.addEventListener("mousemove", (e) => {
         const el = card as HTMLElement;
         const rect = el.getBoundingClientRect();
-        const me = e as MouseEvent;
-        el.style.setProperty("--mouse-x", `${me.clientX - rect.left}px`);
-        el.style.setProperty("--mouse-y", `${me.clientY - rect.top}px`);
+        el.style.setProperty("--mouse-x", `${(e as MouseEvent).clientX - rect.left}px`);
+        el.style.setProperty("--mouse-y", `${(e as MouseEvent).clientY - rect.top}px`);
       });
     });
   });
@@ -110,13 +109,6 @@ const { name, description, tech, github, live } = Astro.props;
     gap: 0.5rem;
   }
 
-  .tag {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    background-color: var(--bg-secondary);
-    color: var(--text-secondary);
-  }
 
   .live-link {
     display: inline-block;

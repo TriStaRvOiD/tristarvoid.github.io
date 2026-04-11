@@ -49,6 +49,14 @@ body {
   flex-direction: column;
 }
 
+.tag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
 ::selection {
   background: rgba(128, 128, 128, 0.2);
   color: var(--text);

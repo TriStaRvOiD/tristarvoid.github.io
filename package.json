@@ -8,13 +8,15 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.8",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@fontsource/josefin-sans": "^5.2.8",
     "@fontsource/lato": "^5.2.7",
     "@fontsource/source-serif-pro": "^5.2.5",
-    "astro": "^6.1.5",
+    "astro": "^6.1.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
     "typescript": "^5.9.3"
   }
 }
