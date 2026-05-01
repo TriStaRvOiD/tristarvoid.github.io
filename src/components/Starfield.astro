@@ -45,6 +45,7 @@
     drift: number;
     twinkleSpeed: number;
     twinkleOffset: number;
+    glyph: "circle" | "sprite";
   }
 
   // --- Light mode: constellation figures ---
@@ -169,16 +170,31 @@
   function generateStars() {
     const area = window.innerWidth * pageHeight;
     const count = Math.floor(area / 12000);
+    const minDist = 22;
+    const minDistSq = minDist * minDist;
+    const maxAttempts = count * 8;
     stars = [];
-    for (let i = 0; i < count; i++) {
+    let attempts = 0;
+    while (stars.length < count && attempts < maxAttempts) {
+      attempts++;
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * pageHeight;
+      let ok = true;
+      for (const s of stars) {
+        const dx = s.x - x;
+        const dy = s.y - y;
+        if (dx * dx + dy * dy < minDistSq) { ok = false; break; }
+      }
+      if (!ok) continue;
       stars.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * pageHeight,
-        size: Math.random() * 1.5 + 0.5,
+        x,
+        y,
+        size: Math.random() * 1.0 + 1.0,
         baseOpacity: Math.random() * 0.4 + 0.1,
         drift: (Math.random() - 0.5) * 0.15,
         twinkleSpeed: Math.random() * 0.02 + 0.005,
         twinkleOffset: Math.random() * Math.PI * 2,
+        glyph: Math.random() < 0.8 ? "circle" : "sprite",
       });
     }
   }
@@ -379,6 +395,49 @@
     return Math.max(0, Math.min(scrollY, max));
   }
 
+  const STAR_SPRITE_SIZE = 64;
+  const starSprite = document.createElement("canvas");
+  starSprite.width = STAR_SPRITE_SIZE;
+  starSprite.height = STAR_SPRITE_SIZE;
+  (function buildStarSprite() {
+    const sctx = starSprite.getContext("2d")!;
+    const c = STAR_SPRITE_SIZE / 2;
+
+    const halo = sctx.createRadialGradient(c, c, 0, c, c, 22);
+    halo.addColorStop(0, "rgba(255,255,255,0.30)");
+    halo.addColorStop(0.4, "rgba(255,255,255,0.07)");
+    halo.addColorStop(1, "rgba(255,255,255,0)");
+    sctx.fillStyle = halo;
+    sctx.fillRect(0, 0, STAR_SPRITE_SIZE, STAR_SPRITE_SIZE);
+
+    function spike(angle: number, length: number, halfWidth: number, alpha: number) {
+      sctx.save();
+      sctx.translate(c, c);
+      sctx.rotate(angle);
+      const g = sctx.createLinearGradient(0, 0, length, 0);
+      g.addColorStop(0, `rgba(255,255,255,${alpha})`);
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      sctx.fillStyle = g;
+      sctx.beginPath();
+      sctx.moveTo(0, -halfWidth);
+      sctx.lineTo(length, 0);
+      sctx.lineTo(0, halfWidth);
+      sctx.closePath();
+      sctx.fill();
+      sctx.restore();
+    }
+
+    for (let i = 0; i < 4; i++) spike((i * Math.PI) / 2, 28, 1.6, 0.95);
+    for (let i = 0; i < 4; i++) spike((i * Math.PI) / 2 + Math.PI / 4, 12, 1.0, 0.4);
+
+    const core = sctx.createRadialGradient(c, c, 0, c, c, 5);
+    core.addColorStop(0, "rgba(255,255,255,1)");
+    core.addColorStop(0.5, "rgba(255,255,255,0.7)");
+    core.addColorStop(1, "rgba(255,255,255,0)");
+    sctx.fillStyle = core;
+    sctx.fillRect(c - 5, c - 5, 10, 10);
+  })();
+
   function drawDarkMode(h: number) {
     const sy = clampedScrollY();
     const parallaxOffset = sy * 0.15;
@@ -394,10 +453,18 @@
 
       if (y < -10 || y > h + 10) continue;
 
-      ctx.beginPath();
-      ctx.arc(x, y, star.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(opacity, 0.55))})`;
-      ctx.fill();
+      if (star.glyph === "circle") {
+        ctx.beginPath();
+        ctx.arc(x, y, star.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(opacity, 0.55))})`;
+        ctx.fill();
+      } else {
+        const drawSize = Math.min(star.size * 14, 20);
+        const half = drawSize / 2;
+        ctx.globalAlpha = Math.max(0, Math.min(opacity * 1.8, 0.8));
+        ctx.drawImage(starSprite, x - half, y - half, drawSize, drawSize);
+        ctx.globalAlpha = 1;
+      }
     }
   }
 
@@ -489,33 +556,11 @@
     }
   }
 
-  let lastLog = 0;
-  function logState(tag: string, force = false) {
-    const now = performance.now();
-    if (!force && now - lastLog < 100) return;
-    lastLog = now;
-    const v = window.visualViewport;
-    console.log(
-      `[sf ${tag}] @${now.toFixed(0)}`,
-      "wsy=" + window.scrollY.toFixed(1),
-      "sy=" + scrollY.toFixed(1),
-      "vv.pt=" + (v ? v.pageTop.toFixed(1) : "-"),
-      "vv.ot=" + (v ? v.offsetTop.toFixed(1) : "-"),
-      "vv.h=" + (v ? v.height.toFixed(1) : "-"),
-      "ih=" + window.innerHeight,
-      "ph=" + pageHeight,
-      "tx=" + (canvas.style.transform || "(none)")
-    );
-  }
-
-  // Periodic poll - catches changes that happen between events.
-  setInterval(() => logState("tick"), 250);
-
   // Initial setup
   updateForCurrentPage();
 
-  window.addEventListener("scroll", () => { onScroll(); logState("w.scroll"); }, { passive: true });
-  window.addEventListener("resize", () => { resize(); logState("w.resize", true); });
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", resize);
 
   // Re-initialize on client-side navigation. The canvas DOM persists
   // (transition:persist), so keep the existing stars/constellations and only
