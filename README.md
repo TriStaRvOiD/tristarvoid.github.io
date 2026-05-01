@@ -1,6 +1,6 @@
-# tristarvoid.github.io
+# tristarvoid.com
 
-Personal portfolio site for [TriStaRvOiD](https://tristarvoid.com). Built with [Astro](https://astro.build), deployed on GitHub Pages.
+Personal portfolio site for [TriStaRvOiD](https://tristarvoid.com). Built with [Astro](https://astro.build).
 
 ## License
 
