@@ -12,10 +12,13 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100lvh;
     z-index: -1;
     pointer-events: none;
     transition: opacity 0.6s ease;
+    /* GPU-layer hint; cheap, kept as a precaution. */
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
   }
 </style>
 
@@ -91,16 +94,30 @@
   let exclusionRects: ExclusionRect[] = [];
   let scrollY = 0;
   let pageHeight = 0;
+  let lastWidth = 0;
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    const w = window.innerWidth;
+    // Mobile chrome (address bar) toggles fire resize but only change height.
+    // Reshuffling stars on every toggle looks like a "refresh" to the user, so
+    // gate regeneration on width change (orientation, real layout, initial).
+    const widthChanged = w !== lastWidth;
+
+    // Bitmap matches CSS box (100lvh), not innerHeight. innerHeight changes
+    // with chrome state, which would cause vertical stretching that shifts
+    // star positions visibly when chrome animates.
+    canvas.width = w * dpr;
+    canvas.height = canvas.clientHeight * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     pageHeight = document.documentElement.scrollHeight;
     computeExclusionZones();
-    generateStars();
-    generateConstellations();
+
+    if (widthChanged) {
+      lastWidth = w;
+      generateStars();
+      generateConstellations();
+    }
   }
 
   function computeExclusionZones() {
@@ -349,8 +366,16 @@
     return document.documentElement.getAttribute("data-theme") === "dark";
   }
 
+  function clampedScrollY(): number {
+    // Safari rubber-band overscroll reports scrollY outside the document
+    // bounds. Clamp so the canvas stops drifting past either end.
+    const max = Math.max(0, pageHeight - window.innerHeight);
+    return Math.max(0, Math.min(scrollY, max));
+  }
+
   function drawDarkMode(h: number) {
-    const parallaxOffset = scrollY * 0.15;
+    const sy = clampedScrollY();
+    const parallaxOffset = sy * 0.15;
 
     for (const star of stars) {
       const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
@@ -359,7 +384,7 @@
       if (opacity <= 0) continue;
 
       const x = star.x + Math.sin(time * 0.001 + star.twinkleOffset) * star.drift * 20;
-      const y = star.y - scrollY + parallaxOffset;
+      const y = star.y - sy + parallaxOffset;
 
       if (y < -10 || y > h + 10) continue;
 
@@ -371,10 +396,11 @@
   }
 
   function drawLightMode(h: number) {
-    const parallaxOffset = scrollY * 0.1;
+    const sy = clampedScrollY();
+    const parallaxOffset = sy * 0.1;
 
     for (const c of constellations) {
-      const cy = c.y - scrollY + parallaxOffset;
+      const cy = c.y - sy + parallaxOffset;
 
       if (cy < -60 || cy > h + 60) continue;
       if (isExcluded(c.x, c.y)) continue;
@@ -419,7 +445,7 @@
     }
 
     const w = window.innerWidth;
-    const h = window.innerHeight;
+    const h = canvas.clientHeight;
     ctx.clearRect(0, 0, w, h);
 
     if (isDark()) {
@@ -457,20 +483,43 @@
     }
   }
 
+  let lastLog = 0;
+  function logState(tag: string, force = false) {
+    const now = performance.now();
+    if (!force && now - lastLog < 100) return;
+    lastLog = now;
+    const v = window.visualViewport;
+    console.log(
+      `[sf ${tag}] @${now.toFixed(0)}`,
+      "wsy=" + window.scrollY.toFixed(1),
+      "sy=" + scrollY.toFixed(1),
+      "vv.pt=" + (v ? v.pageTop.toFixed(1) : "-"),
+      "vv.ot=" + (v ? v.offsetTop.toFixed(1) : "-"),
+      "vv.h=" + (v ? v.height.toFixed(1) : "-"),
+      "ih=" + window.innerHeight,
+      "ph=" + pageHeight,
+      "tx=" + (canvas.style.transform || "(none)")
+    );
+  }
+
+  // Periodic poll - catches changes that happen between events.
+  setInterval(() => logState("tick"), 250);
+
   // Initial setup
   updateForCurrentPage();
 
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", resize);
+  window.addEventListener("scroll", () => { onScroll(); logState("w.scroll"); }, { passive: true });
+  window.addEventListener("resize", () => { resize(); logState("w.resize", true); });
 
-  // Re-initialize on client-side navigation
+  // Re-initialize on client-side navigation. The canvas DOM persists
+  // (transition:persist), so keep the existing stars/constellations and only
+  // refresh page-dependent state.
   document.addEventListener("astro:page-load", () => {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    canvas.height = canvas.clientHeight * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     pageHeight = document.documentElement.scrollHeight;
-    generateStars();
     updateForCurrentPage();
   });
 

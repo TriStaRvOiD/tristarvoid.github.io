@@ -4,8 +4,15 @@
  */
 ---
 
-<video class="profile-video" width="210" height="210" preload="metadata" playsinline>
-  <source src="/assets/profile-video.mp4" type="video/mp4" />
+<video
+  class="profile-video"
+  width="210"
+  height="210"
+  poster="/assets/profile-video-poster.jpg"
+  preload="metadata"
+  playsinline
+>
+  <source src="/assets/profile-video.mp4#t=0.001" type="video/mp4" />
 </video>
 
 <style>
@@ -21,9 +28,27 @@
 
 <script>
   document.addEventListener("astro:page-load", () => {
-    const video = document.querySelector(".profile-video") as HTMLVideoElement;
-    video?.addEventListener("click", () => {
-      if (video.paused) video.play();
+    const video = document.querySelector(".profile-video") as HTMLVideoElement | null;
+    if (!video) return;
+
+    // Safari doesn't honor preload="metadata" on dynamically inserted media
+    // (Astro view-transition swap). Kick off loading explicitly so play() is
+    // responsive on first click.
+    if (video.readyState === 0) video.load();
+
+    const tryPlay = () => {
+      const p = video.play();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => {
+          const onCanPlay = () => { video.play().catch(() => {}); };
+          video.addEventListener("canplay", onCanPlay, { once: true });
+          video.load();
+        });
+      }
+    };
+
+    video.addEventListener("click", () => {
+      if (video.paused) tryPlay();
       else video.pause();
     });
   });
